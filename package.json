@@ -1,0 +1,43 @@
+{
+  "name": "roadmapper",
+  "version": "0.1.0",
+  "description": "Derive a Notion roadmap from GitLab epics and milestones. One way: GitLab stays the source of truth, Notion is the view.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "roadmapper": "./dist/main.js"
+  },
+  "main": "./dist/main.js",
+  "files": [
+    "dist/",
+    "roadmapper.example.toml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "npm run build && node --test \"dist/test/**/*.test.js\"",
+    "test:only": "node --test \"dist/test/**/*.test.js\"",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "gitlab",
+    "notion",
+    "roadmap",
+    "epics",
+    "milestones"
+  ],
+  "dependencies": {
+    "@notionhq/client": "^5.26.0",
+    "smol-toml": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  }
+}

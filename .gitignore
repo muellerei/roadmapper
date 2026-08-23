@@ -1,0 +1,47 @@
+# Not in the repository: specs, notes, working material
+local/
+
+# Real configuration (holds project and database ids)
+roadmapper.toml
+
+# Agent working instructions and everything the assistants keep beside
+# them — rules, hooks, skills, settings, transcripts. None of it is part
+# of the published tool, and it names local paths and habits that have no
+# business in a public repository.
+CLAUDE.md
+.claude/
+
+# Credentials
+.env
+.env.*
+
+# Real API responses kept while developing. These carry project paths,
+# ticket content, Notion ids and people's names — the usual way company
+# data reaches a public repo. Test fixtures must be invented, not saved.
+*.response.json
+fixtures/real/
+scratch/
+
+# Build output and caches
+node_modules/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+.eslintcache
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+.*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

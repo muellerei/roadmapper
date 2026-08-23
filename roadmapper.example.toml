@@ -1,0 +1,67 @@
+# roadmapper — example configuration
+#
+# Copy to `roadmapper.toml` and edit. The real file is gitignored because
+# it holds project and database ids.
+#
+# Credentials do NOT belong here. They come from the environment:
+#   GITLAB_TOKEN=glpat-...     (scope: read_api)
+#   NOTION_TOKEN=ntn_...
+#
+# This file says HOW the source is read — never WHAT is in it. Due dates,
+# progress and descriptions come from GitLab, never from here.
+
+[gitlab]
+host = "gitlab.com"
+
+# What counts as "one thing" on your roadmap?
+#   "epic"      bundle of an epic's child items (GitLab Premium)
+#   "milestone" bundle of the issues in a milestone (any GitLab)
+bundle = "epic"
+
+# For bundle = "epic": which group holds the epics?
+group = "acme/product"
+
+# For bundle = "milestone": which projects?
+# Milestones have no issues field in GraphQL, so issues are fetched per
+# project via issues(milestoneTitle:).
+projects = ["acme/product/app", "acme/product/api"]
+
+
+[notion]
+# The database to write into. The tool resolves its data_source_id itself
+# (Notion API since 2025-09-03).
+database = "00000000-0000-0000-0000-000000000000"
+
+
+# GitLab label  ->  value written to the "state" column
+#
+# GitLab returns scoped labels as a single string ("Flow::Doing").
+# Which labels exist is your team's convention, not a GitLab rule — which
+# is why this table lives here and not in the code. The names below are an
+# example; use whatever your board already has.
+#
+# The values on the right are yours: they are written to Notion verbatim,
+# in whatever language your board uses.
+[status]
+"Flow::Doing" = "In progress"
+"Flow::CodeReview" = "In review"
+"Flow::Verifying" = "In testing"
+"Flow::Blocked" = "Blocked"
+default = "Backlog"
+
+
+# Notion column  ->  what goes into it
+#
+# These are the only columns the tool touches. Everything else in the
+# table is left alone — that is where people keep what GitLab does not
+# know: workstream, owners, comments.
+[columns]
+name = "Feature"
+progress = "Progress"
+state = "Status"
+due = "Due"
+url = "GitLab URL"
+
+# The key a row is found by on the next run. Never edit it by hand, or
+# duplicates appear.
+key = "GitLab ID"
