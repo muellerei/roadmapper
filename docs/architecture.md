@@ -21,12 +21,20 @@ looks like a shortcut that saved a line.
     │        complexity (≤250), the 403 on foreign subgroups       │
     │ emits  bundles and items — nothing GitLab-shaped             │
     │                                                              │
-    │ ── ADR-0003: no GitLab field name may appear below ──        │
+    │ ── ADR-0003: no GitLab field name below — above, they are ── │
+    │ ──           owned, and read as values                    ── │
     └───────────────────────┬──────────────────────────────────────┘
-                            │   bundle { name, state, progress, date }
-                            │   item   { title, state, url, bundle }
+                            │   Bundle { key, number, name, description,
+                            │            closed, due, url, progress,
+                            │            lastActivity, health,
+                            │            items, children }
+                            │   Item   { key, number, title, description,
+                            │            closed, stage, url, bundle,
+                            │            updatedAt, health }
                             │   ← target-neutral: no column names,
                             │     no property types, no page ids
+                            │   ← complete on exit: key, progress,
+                            │     lastActivity and health already filled
                             ▼
     ┌─ src/core/ ──────────────────────────────────────────────────┐
     │ counts · groups · maps labels to states                      │
@@ -55,6 +63,37 @@ if it sits at the edge. `src/core/` sits at neither edge, so it names
 neither side — which is what makes "milestone with 4 issues, 2 closed →
 50%" four lines of invented data instead of an integration test.
 
+## The three directories that are not stages
+
+Four more directories exist, and none of them is a fourth stage. They sit
+*around* the pipeline rather than in it, which is why the diagram above
+does not show them as boxes in the flow:
+
+    src/config/   reads the TOML and checks it (R29), before anything
+                  else runs. Hands `src/core/` a CoreConfig that is
+                  already validated — no function in core ever meets a
+                  raw config file.
+
+    src/report/   turns a finished run into what the reader sees: the
+                  fill rate per column and the closing outcome. Reads
+                  rows and results, computes nothing the stages did not
+                  already decide.
+
+    src/init/     the `roadmapper init` command. Checks the three
+                  prerequisites in a fixed order and adds missing
+                  columns. Uses the source and the target, but wires
+                  neither: both arrive as parameters from `main.ts`.
+
+    src/cli.ts    two subcommands and one flag, hand-parsed.
+    src/main.ts   the wiring, and the only place that does any.
+
+`src/report/` is the one place where the shape of an output leaks
+outwards: `outcomeOf` takes a `WriteResult` from `src/output/notion/`. A
+second output would meet it there and nowhere else. It is the known cost
+of one report rather than one per target, and the narrowest crossing in
+the program — every other value it receives is a structural type it
+declares itself.
+
 The seam on the right is why `progress` crosses as counted numbers rather
 than as the string `"3/8 done"`. A sentence is a rendering decision, and
 a renderer that receives one has to parse it back to draw a bar.
@@ -65,6 +104,10 @@ a renderer that receives one has to parse it back to draw a bar.
     GITLAB_TOKEN      │  config says HOW to read the source,
     NOTION_TOKEN  ────┤  never WHAT the project contains (ADR-0006)
                       ▼
+    0  check the configuration        R29, before a single request:
+       │                              every value known, one column per
+       │                              role, closed distinct from default
+       ▼
     1  read the target schema
        GET /v1/data_sources/{id}    Notion-Version: 2025-09-03
        │
@@ -72,14 +115,22 @@ a renderer that receives one has to parse it back to draw a bar.
        │  unknown column, so the tool checks rather than trusting it.
        │
        ├─ target has the type column  →  write bundles AND items
-       └─ target lacks it             →  write bundles only
-          (a table that cannot tell the levels apart carries one)
+       ├─ target lacks it             →  write bundles only
+       │  (a table that cannot tell the levels apart carries one)
+       │
+       └─ a column of the wrong TYPE  →  leave that column out, write
+          (EC6, e.g. Progress as text)   the rest, name it in the report
+                                         — an abort halfway through is
+                                         worse than an omission
 
     2  fetch from GitLab           one source, per configured kind
        │                           paginated, complexity ≤ 250
        ▼
     3  compute                     progress counts the issue tree,
-       │                           at any depth (ADR-0015)
+       │                           at any depth (ADR-0015) —
+       │                           but the STATE stops after one
+       │                           child level (R3c), and the report
+       │                           names the bundles it truncates
        ▼
     4  write, one row at a time
        │
@@ -107,9 +158,19 @@ otherwise have cost data.
 | Bundles target-neutral, no Notion term in core, outputs never fetch | ADR-0008 |
 | Page bodies always replaced, the table is a view | ADR-0009 |
 | Progress counted from the tree, at any depth | ADR-0015 |
+| The state stops one child level down, and says so | R3c (spec) |
+| Movement is a date, never a verdict | ADR-0016 |
+| The stage source is configurable, exactly one wins | ADR-0017 |
+| Ambiguous lists decided by configuration order | ADR-0018 |
+| The key is selectable, and the tool builds the URL | ADR-0019 |
+| An empty answer cannot name its cause, so it stays exit 0 | ADR-0020 |
+| A column of the wrong type is skipped, not written into | ADR-0021 |
+| A cut child list is fetched, not reported | ADR-0022 |
+| The bundle page size halves itself on a timeout | ADR-0023 |
 | Config says how, never what | ADR-0006 |
 | Notion over REST via the SDK, self-throttled | ADR-0005 |
 
-The vocabulary itself — bundle, item, source, key, progress, owned
-column — is defined in `CONTEXT.md`. Terms in the diagrams above use it
+The vocabulary itself — bundle, item, source, key, progress, state, stage,
+stage source, verdict, activity, health, children, number, owned column —
+is defined in `CONTEXT.md`. Terms in the diagrams above use it
 exactly; a synonym in code is a defect even when it reads better.

@@ -26,11 +26,59 @@ group = "acme/product"
 # project via issues(milestoneTitle:).
 projects = ["acme/product/app", "acme/product/api"]
 
+# Take epics from subgroups too? GitLab does NOT include them by itself —
+# the query has to ask for them, so this is a switch, not a filter.
+# false (the default): only epics sitting directly in `group`.
+subgroups = false
+
+# Include closed bundles? Progress counts closed items ALWAYS, whatever
+# this is set to — this only decides which bundles get a row of their own.
+include_closed = false
+
+# Titles that never belong on a roadmap. Bots file the same ticket in
+# every repository.
+#
+# Compared on EQUALITY, not as a substring: otherwise "Dependency
+# Dashboard" would also filter a ticket called "Rework Dependency
+# Dashboard UX" that somebody keeps on purpose. To exclude a variant as
+# well (the Renovate bot writes an emoji in front, depending on version),
+# add it as a line of its own.
+exclude_titles = ["Dependency Dashboard"]
+
+# Where does an item's work step come from?
+#
+#   "label"   the [status] table below, usually "Flow::" (the default)
+#   "status"  GitLab's own status field on the work item
+#
+# Take what you ACTUALLY MAINTAIN — not what happens to be there. A board
+# advanced through labels leaves the status field on its default value;
+# "status" would then leave every row on "To do" although the labels know
+# the real state.
+#
+# The other source is NOT read as a fallback. Whoever maintains both has
+# two truths, and this is the wrong tool for that.
+#
+# "status" needs GitLab 17.11+; the closing report names the distribution,
+# so it shows when the chosen source knows nothing.
+stage_source = "label"
+
 
 [notion]
 # The database to write into. The tool resolves its data_source_id itself
 # (Notion API since 2025-09-03).
 database = "00000000-0000-0000-0000-000000000000"
+
+# What stands in the row as its key?
+#   "id"   acme/product&7          — short, tells an epic from an item
+#   "url"  https://.../-/epics/7   — a link for the reader at the same time
+#
+# Both are equally stable. "url" is the smaller favour to ask of someone
+# else's table: a URL column is useful to its readers, while an ID column
+# looks like database internals.
+#
+# Do NOT change it afterwards: the existing rows then carry the old key
+# and are no longer found on the next run.
+key_is = "id"
 
 
 # GitLab label  ->  value written to the "state" column
@@ -49,6 +97,37 @@ database = "00000000-0000-0000-0000-000000000000"
 "Flow::Blocked" = "Blocked"
 default = "Backlog"
 
+# The state of a closed bundle. A named entry, with no dependency on
+# order. It MUST differ from `default`, or the run is rejected on start:
+# otherwise a bundle holding only empty child bundles would report
+# "finished".
+closed = "Released"
+
+# Which of the values above mean "somebody is working on it" and which
+# mean "it is stuck".
+#
+# `active` is read ONLY with stage_source = "label" — with "status"
+# GitLab's category carries that meaning itself.
+#
+# `blocked` is read ALWAYS, in both settings: GitLab's categories know no
+# "blocked" (measured — the status literally named "Blocked" has the
+# category "in progress"). With stage_source = "status" these are the
+# status NAMES of your board, with "label" the target values above.
+#
+# THE ORDER DECIDES which value goes into the column when the triggering
+# children carry different ones. This is the only rule of this tool that
+# acts silently: no error, no message. Writing blocked = ["Blocked",
+# "Waiting"] already says: when there is a choice, then "Blocked".
+#
+# At bundle level, blocked means: ALL OPEN children are blocked — done
+# children do not count towards it.
+#
+# Every value here must appear on the right in [status] — a typo
+# ("In Progress" instead of "In progress") would otherwise let every
+# bundle fall silently to `default`. Checked on start.
+active = ["In progress", "In review"]
+blocked = ["Blocked"]
+
 
 # Notion column  ->  what goes into it
 #
@@ -61,6 +140,22 @@ progress = "Progress"
 state = "Status"
 due = "Due"
 url = "GitLab URL"
+
+# Which level the row describes: Bundle or Item. If your table does not
+# carry this column, ONLY BUNDLES are written — a table that cannot tell
+# the levels apart in its rows carries one kind, and on roadmap altitude
+# that is the bundle level.
+type = "Level"
+
+# The newest date among the bundle, its items and its children. A date,
+# never a judgement: when standstill becomes a problem is known only to
+# your team. Notion filters on "older than X" itself.
+activity = "Last activity"
+
+# GitLab's health status, rolled up from the descendants. Leave this line
+# out if you do not maintain that field — measured, that is the normal
+# case, and an empty column answers nothing.
+health = "Health"
 
 # The key a row is found by on the next run. Never edit it by hand, or
 # duplicates appear.

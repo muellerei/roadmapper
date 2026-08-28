@@ -1,0 +1,36 @@
+{
+  "data": {
+    "workItem": {
+      "widgets": [
+        {
+          "children": {
+            "pageInfo": { "hasNextPage": false, "endCursor": null },
+            "nodes": [
+              {
+                "id": "gid://gitlab/WorkItem/2004",
+                "iid": "12",
+                "workItemType": { "name": "Epic" },
+                "namespace": { "fullPath": "acme/product" },
+                "title": "Validation rules",
+                "description": "Reject a broken catalogue early.",
+                "state": "OPEN",
+                "webUrl": "https://gitlab.example.invalid/groups/acme/product/-/epics/12",
+                "updatedAt": "2026-08-09T09:00:00Z",
+                "widgets": [
+                  { "labels": { "nodes": [] } },
+                  {
+                    "hasChildren": false,
+                    "rolledUpCountsByType": [
+                      { "workItemType": { "name": "Issue" }, "countsByState": { "all": 1, "closed": 0 } }
+                    ],
+                    "children": { "pageInfo": { "hasNextPage": false, "endCursor": null }, "nodes": [] }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

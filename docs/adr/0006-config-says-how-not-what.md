@@ -1,5 +1,10 @@
 # Configuration says how to read the source, never what is in it
 
+> The opening sentence below is older than `stage_source`: the config maps
+> labels to states only under `stage_source = "label"`
+> ([ADR-0017](0017-the-stage-source-is-configurable.md)). The substance of
+> this decision is untouched.
+
 The config file maps labels to states and names the Notion columns to
 write. It may not supply due dates, descriptions or progress. Those come
 from GitLab or they are absent and reported as absent.

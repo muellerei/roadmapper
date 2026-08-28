@@ -1,0 +1,27 @@
+{
+  "data": {
+    "workItem": {
+      "widgets": [
+        {
+          "children": {
+            "pageInfo": { "hasNextPage": true, "endCursor": "CHILD-CURSOR-3" },
+            "nodes": [
+              {
+                "id": "gid://gitlab/WorkItem/2003",
+                "iid": "51",
+                "workItemType": { "name": "Issue" },
+                "namespace": null,
+                "title": "Map the columns",
+                "description": null,
+                "state": "OPEN",
+                "webUrl": "https://gitlab.example.invalid/acme/product/app/-/issues/51",
+                "updatedAt": "2026-08-03T09:00:00Z",
+                "widgets": [{ "labels": { "nodes": [{ "title": "Flow::Blocked" }] } }]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

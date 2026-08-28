@@ -8,22 +8,23 @@
     "node": ">=24"
   },
   "bin": {
-    "roadmapper": "./dist/main.js"
+    "roadmapper": "./dist/src/main.js"
   },
-  "main": "./dist/main.js",
+  "main": "./dist/src/main.js",
   "files": [
-    "dist/",
+    "dist/src/",
     "roadmapper.example.toml",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/src/main.js",
     "watch": "tsc --watch",
     "test": "npm run build && node --test \"dist/test/**/*.test.js\"",
     "test:only": "node --test \"dist/test/**/*.test.js\"",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "check:boundaries": "./scripts/check-boundaries.sh src/core && ./scripts/check-boundaries.sh src/source/gitlab && ./scripts/check-boundaries.sh src/output/notion"
   },
   "keywords": [
     "gitlab",

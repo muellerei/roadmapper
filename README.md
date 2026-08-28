@@ -3,10 +3,12 @@
 Derive a Notion roadmap from GitLab epics and milestones. One way: GitLab
 stays the source of truth, Notion is the view.
 
-> **Status: design. No code yet.** See [docs/adr/](docs/adr/) for the
-> decisions and why they were made, [docs/architecture.md](docs/architecture.md)
-> for the boundaries between the three stages, and
-> [CONTEXT.md](CONTEXT.md) for the vocabulary.
+> **Status: in development.** The six stages are built and covered by
+> tests; what is not yet verified against a live Notion workspace is noted
+> under [Getting started](#getting-started). See [docs/adr/](docs/adr/) for
+> the decisions and why they were made,
+> [docs/architecture.md](docs/architecture.md) for the boundaries between
+> the three stages, and [CONTEXT.md](CONTEXT.md) for the vocabulary.
 
 - One command, no daemon, no queue. Suitable for cron.
 - Runs where you put it, on the schedule you choose.
@@ -31,6 +33,8 @@ can show management the epic level and anyone else the issues beneath it.
 ## What it does
 
 - Reads **epics** or **milestones** from GitLab as bundles of issues
+- Filters out bundles you never want on the roadmap (`exclude_titles`) —
+  bots file the same ticket in every repository
 - Counts progress from the issues in the tree, not from a field someone
   maintains
 - Writes bundles and their issues into one Notion database
@@ -43,9 +47,10 @@ can show management the epic level and anyone else the issues beneath it.
 ## What it does not do
 
 - **Write back to GitLab.** Moving a card in Notion does not stick; the
-  next run resets it, because the state comes from the label. That is the
-  design, not a defect — a view that can drift is a second place to
-  maintain.
+  next run resets it, because the state is *derived* — from the workflow
+  label or from GitLab's own status field, whichever `stage_source` names.
+  That is the design, not a defect — a view that can drift is a second
+  place to maintain.
 - **Keep what you type into a synced page.** The table is a *view*: the
   page body of every row — bundle and issue alike — is rewritten on each
   run. Notes belong in a Notion **comment**, which the tool never touches,
@@ -55,6 +60,11 @@ can show management the epic level and anyone else the issues beneath it.
 - **Fill in missing data.** No configuration supplies due dates or
   progress. Where a project has neither epics nor milestones, the tool
   says so instead of drawing a board out of nothing.
+- **Read group milestones.** Milestones are read per project. A project
+  query reaches through to a *group* milestone of the same name and returns
+  items from sibling projects as well — measured — so bundles would hold
+  more items than they should. `roadmapper init` names this case when
+  milestones are configured.
 - **Produce HTML.** Notion is the only target.
 
 ## Built with
@@ -73,15 +83,187 @@ GitLab is read over GraphQL, Notion written over REST — see
 - GitLab 17.3 or newer for epic progress — the rolled-up counts it rests
   on do not exist before that (ADR-0015). GitLab.com always qualifies.
 
+## Getting started
+
+    git clone <this repository>
+    cd roadmapper
+    npm install
+    npm run build
+    npm link          # optional — puts `roadmapper` on your PATH
+
+Then, in the directory you want to run from (without `npm link`, call
+`node /path/to/roadmapper/dist/src/main.js` instead):
+
+    export GITLAB_TOKEN=glpat-...     # GitLab → Settings → Access tokens, scope read_api
+    export NOTION_TOKEN=ntn_...       # notion.so/profile/integrations
+
+    roadmapper init                   # creates roadmapper.toml, then checks everything
+    # edit roadmapper.toml
+    roadmapper init                   # run it again — it checks, it does not guess
+    roadmapper                        # the first sync
+
+`roadmapper init` does most of the setup: it creates the configuration from
+the example, checks both tokens, resolves the database, **creates the
+columns you configured but the target does not carry**, and reports whether
+the source returns bundles. It walks a fixed order and stops at the first
+problem, because the later checks build on the earlier ones. It installs
+nothing, changes no `PATH` and writes no cron entry.
+
+### Tokens and `.env`
+
+**No `.env` file is read.** The two tokens are looked up in the environment
+of the process, and nowhere else — a file beside the command is not
+searched for, at any depth. Cron is the case this tool is built for, and
+cron has no working directory worth trusting: a credentials file found by
+looking around is a lookup nobody can see.
+
+Node reads one for you, if you want the file:
+
+    node --env-file=.env /path/to/roadmapper/dist/src/main.js
+
+That flag reaches the `node` binary, not the `roadmapper` shim `npm link`
+puts on your `PATH`. To keep the short command, put the values into the
+shell first:
+
+    set -a; . ./.env; set +a       # exports every name the file sets
+    roadmapper
+
+Both are the same thing to the tool: by the time it starts, the tokens are
+in the environment. Which of the two you use is a matter of taste — the
+first keeps them to a single run, the second to a single shell.
+
+### Sharing the database with the integration
+
+An integration sees nothing until a database is shared with it — and an
+unshared database answers exactly like a wrong id, which sends people
+looking for the id instead:
+
+> open the database in Notion → **···** → **Connections** → add your
+> integration
+
+If every row later fails to write, the integration can read but not write:
+same path, then **Can edit**.
+
+### The columns
+
+`roadmapper init` creates missing ones with the right type. If you create
+them by hand, these are the types it expects:
+
+| `[columns]` key | Notion type | Holds |
+|---|---|---|
+| `key` | Text — or URL with `key_is = "url"` | the value a row is found by on the next run |
+| `name` | Title | the bundle or issue title |
+| `state` | Select or Status | the value from `[status]` |
+| `progress` | **Number (Percent)** | the fraction, see below |
+| `url` | URL | the link into GitLab |
+| `due` | Date | the bundle's date, empty when GitLab has none |
+| `type` | Select or Status | `Bundle` / `Item` — **without it, only bundles are written** |
+| `activity` | Date | the newest change in the bundle |
+| `health` | Select or Status | `ok` / `attention` / `risk` |
+
+Only `key` and `name` are mandatory. Everything else falls out cleanly when
+it is missing — which is what makes `health` usable: if nobody maintains
+that field in GitLab, leave the column out and lose nothing.
+
+**A column of the wrong type is left out, not written into.** If your
+`Progress` column is a Text column — the shape the predecessor tool used,
+where it wrote `"3/8 done"` — the run writes every other column, skips that
+one, and names it in the report. It does not send a number into a text
+field and let Notion reject every row halfway through.
+
+**Each role needs a column of its own.** Two roles pointing at one column
+name is rejected before the first request: a row can hold one value per
+column, so the second role would silently overwrite the first — and if that
+is the key, the next run no longer finds its own rows and creates them
+again, every night.
+
+**`progress` must be Number with Percent formatting.** The column takes the
+fraction `0.4`, not `40`. Notion accepts both without complaint, and as a
+plain number you see `0.63` where you expect `63 %` — measured, and the one
+mistake here that looks like a bug in the tool.
+
+### Not yet verified
+
+The write path is covered by tests against a stubbed Notion client, and the
+value shapes were confirmed against a real table (a percent column renders
+`0.4` as 40 %, dates arrive as dates, select values are accepted). What has
+**not** been exercised is a full run against a live workspace through an
+integration token, and the self-throttling under real load.
+
 ## Configuration
 
 Copy [`roadmapper.example.toml`](roadmapper.example.toml) to
 `roadmapper.toml` and edit it. Tokens come from the environment
 (`GITLAB_TOKEN`, `NOTION_TOKEN`), never from the file.
 
-The configuration says *how* to read the source — which bundle kind,
-which labels map to which state, which Notion column takes what. It never
-says what is in the source.
+The configuration says *how* to read the source — which bundle kind, where
+the work step comes from, which Notion column takes what. It never says
+what is in the source.
+
+### `--config <file>`
+
+Both subcommands take it; without it, `roadmapper.toml` in the working
+directory is used.
+
+    roadmapper --config test.toml        # a rebuilt target schema
+    roadmapper --config produktiv.toml   # the real target
+
+**A relative path resolves against the working directory**, like any other
+command-line tool. The tool does not resolve against its own location and
+does not search parent directories: both would be a search nobody sees, and
+with two similarly named targets that is the worst possible property.
+
+**For cron, give an absolute path** — the case the parameter exists for is
+also the case with the least obvious working directory:
+
+    0 6 * * *  roadmapper --config /etc/roadmapper/produktiv.toml
+    0 7 * * *  roadmapper --config /etc/roadmapper/test.toml
+
+Which invocation creates a config, and which does not:
+
+| | `roadmapper` | `roadmapper init` |
+|---|---|---|
+| `--config <file>` named, missing | abort, path in the message | **abort** — a named file is never created |
+| no `--config`, `roadmapper.toml` missing | abort, points at `init` | creates it from the example and stops |
+
+A file you named yourself is never created silently: whoever types
+`--config produktiv.toml` with a typo wants an error, not an empty file
+beside the real one.
+
+## What a run tells you
+
+Every run ends with a report, and it is the part worth reading. Each
+decision this tool makes is defensible on its own — progress left empty
+rather than guessed at, a date left empty rather than invented, a state
+falling back to the default — and their *sum* can be an empty board while
+no error fires at all. The report is what makes that visible:
+
+    30 bundles, 210 items written.
+      GitLab ID       30/30
+      Feature         30/30
+      Status           2/30    (from labels; 28x To do, 2x In progress)
+      Progress        27/30
+      Health           0/30    (field not maintained in GitLab)
+
+    28 of 30 rows fell to "To do". Your [status] table maps "Workflow".
+    Found in source: Stage. Adjust [status], or drop the state column.
+
+`Status 2/30` is the line to look at. A row that fell back to the default
+carries a value, but that value means "nothing was found here" — counting
+it as filled would show `30/30` on a board that says nothing. The
+distribution beside it names what the rows actually hold.
+
+Anything the run could not do goes to stderr, one paragraph each: a column
+of the wrong type that was skipped, bundles whose progress GitLab could not
+supply, item rows a target without a `type` column cannot take, a key the
+target holds twice, a subgroup the token may not read.
+
+**Exit codes are deliberately blunt.** Non-zero means *the run did not
+happen* — a broken configuration, an unreadable target, or every single row
+failing to write. It does not mean "something was ugly": one skipped row
+among thirty keeps exit 0, and so does an empty result. The tool is built
+for cron, and a failure mail every night trains its reader to ignore the
+mails — including the one that reports a real abort.
 
 ## When to use something else
 

@@ -1,0 +1,44 @@
+{
+  "data": {
+    "project": {
+      "issues": {
+        "pageInfo": { "hasNextPage": false, "endCursor": null },
+        "nodes": [
+          {
+            "id": "gid://gitlab/Issue/9001",
+            "iid": "42",
+            "title": "Queue drains on reconnect",
+            "description": "",
+            "state": "opened",
+            "webUrl": "https://gitlab.example.invalid/acme/product/app/-/issues/42",
+            "updatedAt": "2026-08-24T14:00:00Z",
+            "milestone": { "title": "Release 2.0" },
+            "labels": { "nodes": [{ "title": "Flow::Doing" }] }
+          },
+          {
+            "id": "gid://gitlab/Issue/9002",
+            "iid": "41",
+            "title": "Something finished",
+            "description": "",
+            "state": "closed",
+            "webUrl": "https://gitlab.example.invalid/acme/product/app/-/issues/41",
+            "updatedAt": "2026-07-10T09:00:00Z",
+            "milestone": { "title": "Release 2.0" },
+            "labels": { "nodes": [] }
+          },
+          {
+            "id": "gid://gitlab/Issue/9003",
+            "iid": "30",
+            "title": "An older issue",
+            "description": "",
+            "state": "closed",
+            "webUrl": "https://gitlab.example.invalid/acme/product/app/-/issues/30",
+            "updatedAt": "2026-05-20T09:00:00Z",
+            "milestone": { "title": "Release 1.9" },
+            "labels": { "nodes": [] }
+          }
+        ]
+      }
+    }
+  }
+}

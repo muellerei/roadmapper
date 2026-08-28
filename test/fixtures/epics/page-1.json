@@ -1,0 +1,156 @@
+{
+  "data": {
+    "group": {
+      "workItems": {
+        "pageInfo": {
+          "hasNextPage": true,
+          "endCursor": "CURSOR-PAGE-2"
+        },
+        "nodes": [
+          {
+            "id": "gid://gitlab/WorkItem/1001",
+            "iid": "7",
+            "workItemType": {
+              "name": "Epic"
+            },
+            "namespace": {
+              "fullPath": "acme/product"
+            },
+            "title": "Offline mode",
+            "description": "Let the app work without a connection.",
+            "state": "OPEN",
+            "webUrl": "https://gitlab.example.invalid/groups/acme/product/-/epics/7",
+            "updatedAt": "2026-08-05T09:00:00Z",
+            "widgets": [
+              {
+                "dueDate": "2026-09-30"
+              },
+              {
+                "labels": {
+                  "nodes": [
+                    {
+                      "title": "Flow::Doing"
+                    }
+                  ]
+                }
+              },
+              {
+                "hasChildren": true,
+                "children": {
+                  "nodes": [
+                    {
+                      "id": "gid://gitlab/WorkItem/1002",
+                      "iid": "8",
+                      "workItemType": {
+                        "name": "Epic"
+                      },
+                      "namespace": {
+                        "fullPath": "acme/product"
+                      },
+                      "title": "Sync queue",
+                      "description": "",
+                      "state": "OPEN",
+                      "webUrl": "https://gitlab.example.invalid/groups/acme/product/-/epics/8",
+                      "updatedAt": "2026-08-02T11:00:00Z",
+                      "widgets": [
+                        {
+                          "hasChildren": false
+                        },
+                        {
+                          "labels": {
+                            "nodes": []
+                          }
+                        },
+                        {
+                          "children": {
+                            "nodes": [
+                              {
+                                "id": "gid://gitlab/WorkItem/1003",
+                                "iid": "43",
+                                "workItemType": {
+                                  "name": "Issue"
+                                },
+                                "namespace": null,
+                                "title": "Queue drains on reconnect",
+                                "description": "",
+                                "state": "OPEN",
+                                "webUrl": "https://gitlab.example.invalid/acme/product/app/-/issues/43",
+                                "updatedAt": "2026-08-24T14:00:00Z",
+                                "widgets": [
+                                  {
+                                    "labels": {
+                                      "nodes": [
+                                        {
+                                          "title": "Flow::Doing"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "rolledUpCountsByType": [
+                                      {
+                                        "workItemType": {
+                                          "name": "Issue"
+                                        },
+                                        "countsByState": {
+                                          "all": 0,
+                                          "closed": 0
+                                        }
+                                      }
+                                    ],
+                                    "rolledUpHealthStatus": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "rolledUpCountsByType": [
+                            {
+                              "workItemType": {
+                                "name": "Issue"
+                              },
+                              "countsByState": {
+                                "all": 1,
+                                "closed": 0
+                              }
+                            }
+                          ],
+                          "rolledUpHealthStatus": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "rolledUpCountsByType": [
+                  {
+                    "workItemType": {
+                      "name": "Issue"
+                    },
+                    "countsByState": {
+                      "all": 3,
+                      "closed": 1
+                    }
+                  }
+                ],
+                "rolledUpHealthStatus": [
+                  {
+                    "healthStatus": "onTrack",
+                    "count": 2
+                  },
+                  {
+                    "healthStatus": "atRisk",
+                    "count": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

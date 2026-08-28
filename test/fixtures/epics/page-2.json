@@ -1,0 +1,56 @@
+{
+  "data": {
+    "group": {
+      "workItems": {
+        "pageInfo": {
+          "hasNextPage": false,
+          "endCursor": null
+        },
+        "nodes": [
+          {
+            "id": "gid://gitlab/WorkItem/1010",
+            "iid": "9",
+            "workItemType": {
+              "name": "Epic"
+            },
+            "namespace": {
+              "fullPath": "acme/product"
+            },
+            "title": "Signed installers",
+            "description": "",
+            "state": "CLOSED",
+            "webUrl": "https://gitlab.example.invalid/groups/acme/product/-/epics/9",
+            "updatedAt": "2026-07-20T08:00:00Z",
+            "widgets": [
+              {
+                "dueDate": null
+              },
+              {
+                "labels": {
+                  "nodes": []
+                }
+              },
+              {
+                "hasChildren": false
+              },
+              {
+                "rolledUpCountsByType": [
+                  {
+                    "workItemType": {
+                      "name": "Issue"
+                    },
+                    "countsByState": {
+                      "all": 4,
+                      "closed": 4
+                    }
+                  }
+                ],
+                "rolledUpHealthStatus": []
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

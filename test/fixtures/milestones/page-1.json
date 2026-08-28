@@ -1,0 +1,33 @@
+{
+  "data": {
+    "project": {
+      "milestones": {
+        "pageInfo": { "hasNextPage": false, "endCursor": null },
+        "nodes": [
+          {
+            "id": "gid://gitlab/Milestone/501",
+            "iid": "3",
+            "title": "Release 2.0",
+            "description": "The offline release.",
+            "state": "active",
+            "dueDate": "2026-10-15",
+            "updatedAt": "2026-08-01T10:00:00Z",
+            "webPath": "/acme/product/app/-/milestones/3",
+            "stats": { "totalIssuesCount": 30, "closedIssuesCount": 12 }
+          },
+          {
+            "id": "gid://gitlab/Milestone/502",
+            "iid": "4",
+            "title": "Release 1.9",
+            "description": "",
+            "state": "closed",
+            "dueDate": null,
+            "updatedAt": "2026-06-01T10:00:00Z",
+            "webPath": "/acme/product/app/-/milestones/4",
+            "stats": { "totalIssuesCount": 8, "closedIssuesCount": 8 }
+          }
+        ]
+      }
+    }
+  }
+}

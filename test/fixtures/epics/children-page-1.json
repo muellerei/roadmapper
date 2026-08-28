@@ -1,0 +1,49 @@
+{
+  "data": {
+    "group": {
+      "workItems": {
+        "pageInfo": { "hasNextPage": false, "endCursor": null },
+        "nodes": [
+          {
+            "id": "gid://gitlab/WorkItem/2001",
+            "iid": "11",
+            "workItemType": { "name": "Epic" },
+            "namespace": { "fullPath": "acme/product" },
+            "title": "Bulk import",
+            "description": "Take a whole catalogue in one go.",
+            "state": "OPEN",
+            "webUrl": "https://gitlab.example.invalid/groups/acme/product/-/epics/11",
+            "updatedAt": "2026-08-01T09:00:00Z",
+            "widgets": [
+              { "dueDate": null },
+              { "labels": { "nodes": [] } },
+              {
+                "hasChildren": true,
+                "rolledUpCountsByType": [
+                  { "workItemType": { "name": "Issue" }, "countsByState": { "all": 3, "closed": 1 } }
+                ],
+                "children": {
+                  "pageInfo": { "hasNextPage": true, "endCursor": "CHILD-CURSOR-2" },
+                  "nodes": [
+                    {
+                      "id": "gid://gitlab/WorkItem/2002",
+                      "iid": "50",
+                      "workItemType": { "name": "Issue" },
+                      "namespace": null,
+                      "title": "Read the catalogue file",
+                      "description": null,
+                      "state": "CLOSED",
+                      "webUrl": "https://gitlab.example.invalid/acme/product/app/-/issues/50",
+                      "updatedAt": "2026-08-02T09:00:00Z",
+                      "widgets": [{ "labels": { "nodes": [{ "title": "Flow::Doing" }] } }]
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

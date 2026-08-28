@@ -1,5 +1,11 @@
 # One way only: GitLab is the source, Notion is the view
 
+> Superseded in one point by
+> [ADR-0017](0017-the-stage-source-is-configurable.md): the state comes from
+> the label **or** from GitLab's status field, whichever `stage_source`
+> names. The consequence below stands in full — only its derivation was too
+> narrow.
+
 A management board kept by hand next to the issue tracker drifts from the
 day it is written. We derive the board from GitLab instead, and nothing
 travels back: no state, no dates, no progress.
