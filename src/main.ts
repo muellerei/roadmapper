@@ -83,8 +83,10 @@ export async function main(argv: readonly string[], environment: Environment): P
 
   const config = validateConfig(readConfig(path))
 
-  // Credentials come from the environment, never from a file and never from
-  // local/ — that directory is storage, not configuration (R24).
+  // Credentials come from the environment and nowhere else: no file beside
+  // the command is searched for, at any depth. Cron has no working directory
+  // worth trusting, and a credentials file found by looking around is a
+  // lookup nobody can see.
   const gitlabToken = required(env, 'GITLAB_TOKEN')
   const notionToken = required(env, 'NOTION_TOKEN')
 
