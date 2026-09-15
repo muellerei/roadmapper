@@ -1,0 +1,70 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # The suite, on the version the README requires and on the next one.
+  # `engines: >=24` is a promise to whoever clones this; a matrix is what
+  # keeps it from becoming a claim nobody checks.
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['24', '26']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+  # ADR-0003 and ADR-0008 draw a boundary between the three stages, and
+  # scripts/check-boundaries.sh makes it runnable. Running it here is the
+  # difference between a rule that can be checked and one that is.
+  boundaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm run check:boundaries
+
+  # The path a stranger actually takes: clone, install, build, run the
+  # binary. It passes even when the suite does — a missing file in
+  # `files`, a bad `bin` path or a build that only works from a warm
+  # node_modules shows up here and nowhere else.
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # `init` with no configuration present writes one from the example
+      # and stops. Exit 0, and roadmapper.toml exists afterwards.
+      - name: roadmapper init creates a configuration
+        run: |
+          mkdir -p "$RUNNER_TEMP/trial"
+          cd "$RUNNER_TEMP/trial"
+          node "$GITHUB_WORKSPACE/dist/src/main.js" init
+          test -f roadmapper.toml
+      # Run again, now with a configuration but no tokens: it must fail
+      # at the token step rather than reaching the network.
+      - name: roadmapper init stops at the missing tokens
+        run: |
+          cd "$RUNNER_TEMP/trial"
+          if node "$GITHUB_WORKSPACE/dist/src/main.js" init; then
+            echo "expected a non-zero exit with no tokens set" >&2
+            exit 1
+          fi
