@@ -72,6 +72,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the half nobody names: because nothing is generated, a board that looks
   wrong is wrong reproducibly.
 
+- The README says what the tool is allowed to do, and why it can run
+  again tomorrow. Both properties existed and neither was stated where a
+  reader decides: the GitLab side is read-only because no mutation exists
+  in the source stage, the Notion side reaches one shared database and
+  the columns `[columns]` names — a narrower grant than the account of
+  whoever would otherwise do it by hand. Idempotence was recorded only in
+  `docs/architecture.md`, although it is what makes this a cron job
+  rather than a procedure somebody has to remember.
+
 - The README says that Notion views are set up by hand. ADR-0016 already
   assumed one ("whoever wants the judgement makes it in the view"), and
   nothing said who creates it — the tool fills a table and creates missing

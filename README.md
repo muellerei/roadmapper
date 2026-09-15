@@ -104,6 +104,39 @@ database — every run asks GitLab again. The single file it ever writes is
 the configuration `roadmapper init` copies from the example, and that one
 holds no credentials by design.
 
+### What it is allowed to do
+
+Each side gets the narrowest thing that works, and the asymmetry is the
+point:
+
+- **GitLab: read-only.** The token needs scope `read_api` and nothing
+  more. There is no mutation anywhere in the source stage — moving a card
+  in Notion cannot write back, because there is no code that could.
+- **Notion: one database.** An integration sees only what has been shared
+  with it, so the write reaches the table you connected and nothing else
+  in the workspace — and within that table, only the columns `[columns]`
+  names.
+
+That is a smaller grant than a person has. Anyone running this by hand is
+signed in with their own account, which can reach every project they can
+see and every page in the workspace; a scoped token is the same job with
+most of the reach removed. It is also the difference between "I will not
+touch that" and "I cannot".
+
+### Why it can run again tomorrow
+
+The run is idempotent: the key decides update-or-create, so running it
+twice changes nothing the first run already did, and an interrupted run
+is repaired by the next one rather than needing a cleanup. Nothing is
+ever deleted — a row whose bundle disappeared from GitLab stays, because
+the first wrong key would otherwise have cost data.
+
+That is what makes it a cron job rather than a procedure. A board that is
+refreshed by someone performing a sequence of steps is only as current as
+the last time somebody had twenty minutes; one that runs at six every
+morning is current because nobody has to remember it. The same property
+is why a failed run is not a problem to untangle: run it again.
+
 ## Built with
 
 TypeScript on Node ≥ 24. Two runtime dependencies: `@notionhq/client`
