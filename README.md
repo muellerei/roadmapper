@@ -1,5 +1,7 @@
 # roadmapper
 
+[![checks](https://github.com/muellerei/roadmapper/actions/workflows/checks.yml/badge.svg)](https://github.com/muellerei/roadmapper/actions/workflows/checks.yml)
+
 Derive a Notion roadmap from GitLab epics and milestones. One way: GitLab
 stays the source of truth, Notion is the view.
 
@@ -304,6 +306,12 @@ automation platform — one more connection there beats adopting a tool.
 What those cannot do is the aggregation: a field mapping maps a field to a
 field, and "63% of this epic is done" is a sum over a tree, not a field.
 That is the one thing this tool is for.
+
+## Contributing
+
+The suite runs with no token and no network, and
+[CONTRIBUTING.md](CONTRIBUTING.md) covers the three checks, where each
+stage's code belongs and when a change needs an ADR.
 
 ## Licence
 
