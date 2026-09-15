@@ -72,6 +72,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the half nobody names: because nothing is generated, a board that looks
   wrong is wrong reproducibly.
 
+- The data section is now titled for the person who needs it — whoever
+  signs a tool off before it touches a tracker — and says what it had
+  never stated: the GraphQL query selects no assignee, author, username,
+  email or avatar, so `src/core/` has no field that could carry one. The
+  board answers what is moving, not who. Issue titles and descriptions do
+  travel, and that is said in the same breath rather than left for
+  somebody to discover.
+
 - The README says who the tool is for. It explained the problem and the
   design at length and never named a situation, so a reader had to work
   out from the feature list whether they were the intended audience.

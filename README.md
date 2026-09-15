@@ -17,6 +17,8 @@ stays the source of truth, Notion is the view.
 - Runs where you put it, on the schedule you choose.
 - Configuration is a file you can read, copy and version.
 - Two runtime dependencies. No LLM involved.
+- Read-only on GitLab, one shared database on Notion, no personal data
+  read at all — see [Data protection](#data-protection-and-how-to-check-it).
 
 ## Why
 
@@ -122,11 +124,30 @@ Configured in `roadmapper.toml` as `bundle = "epic"` or
   *columns*, never views.
 - **Produce HTML.** Notion is the only target.
 
-## Where the data goes
+## Data protection, and how to check it
 
-Two places, both yours: your GitLab instance and the Notion database you
-configured. Nothing else is contacted — no telemetry, no update check, no
-third party in between.
+This is the section for whoever has to sign off on a tool before it
+touches a tracker. It states properties rather than intentions, and each
+one is verifiable from the source in a few minutes — an assurance you
+cannot check is worth about as much as none.
+
+**Where the data goes:** two places, both yours — your GitLab instance
+and the Notion database you configured. Nothing else is contacted: no
+telemetry, no update check, no third party in between.
+
+**No personal data is read.** The GraphQL query asks for no assignee, no
+author, no username, no email address and no avatar — not by filtering
+them out afterwards, but by never selecting them, which is why
+`src/core/` has no field that could hold one. A bundle carries a title, a
+date, a state, counts and a URL; an item the same. Whoever is working on
+something does not travel to Notion, because the question the board
+answers is what is moving, not who is moving it.
+
+What does travel is issue **titles and descriptions**, and a description
+is free text somebody wrote — if your tracker puts customer names or
+personal details into those fields, they reach the Notion page like any
+other text. That is the one place to look before pointing this at a
+workspace with a different audience than the tracker.
 
 **No model sees your tickets.** This is a deterministic program: it reads
 GraphQL, counts, and writes REST. Nothing is sent to an LLM, and no part
