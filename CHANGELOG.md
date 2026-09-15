@@ -72,6 +72,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the half nobody names: because nothing is generated, a board that looks
   wrong is wrong reproducibly.
 
+- The setup instructions name the repository to clone and say where the
+  Notion database id comes from. The clone line read `git clone <this
+  repository>`, which is not a command anyone can paste, and the id — the
+  one value in the configuration that has to be looked up rather than
+  decided — was explained only in the error message that appears once
+  somebody has already got it wrong.
+
 - Every example label was renamed to an invented scheme. The old ones
   reproduced a real group's label vocabulary verbatim — the values, the
   prefix, and a second prefix beside it — because they were written from

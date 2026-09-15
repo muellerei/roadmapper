@@ -222,7 +222,7 @@ GitLab is read over GraphQL, Notion written over REST — see
 
 ## Getting started
 
-    git clone <this repository>
+    git clone https://github.com/muellerei/roadmapper.git
     cd roadmapper
     npm install
     npm run build
@@ -268,6 +268,22 @@ shell first:
 Both are the same thing to the tool: by the time it starts, the tokens are
 in the environment. Which of the two you use is a matter of taste — the
 first keeps them to a single run, the second to a single shell.
+
+### The database id
+
+`[notion].database` takes the id, which is in the URL of the database
+itself — open it as a full page and take the part after the workspace
+name and before the `?`:
+
+    https://www.notion.so/myspace/20c5f1e2ab1c80f7bd3ef1b2c3d4e5f6?v=...
+                                  └──────────── the id ───────────┘
+
+The id is passed to Notion as you write it — the tool neither reformats
+it nor validates its shape, so copy it exactly. If the database sits
+inside another page, open it full-page first (**Open as page** in its ···
+menu): the URL of the surrounding page is a different id, and using it
+produces the same "cannot see it" answer as a database that was never
+shared.
 
 ### Sharing the database with the integration
 
