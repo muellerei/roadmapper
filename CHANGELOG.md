@@ -163,5 +163,3 @@ workspace; see *Not yet verified* in the README for what that leaves open.
 - `scripts/check-boundaries.sh`, which makes the stage boundary of
   ADR-0003 and ADR-0008 runnable rather than merely written down.
 
-[Unreleased]: https://github.com/muellerei/roadmapper/compare/308a906...HEAD
-[0.1.0]: https://github.com/muellerei/roadmapper/commit/308a906
