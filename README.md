@@ -8,7 +8,8 @@ stays the source of truth, Notion is the view.
 > under [Getting started](#getting-started). See [docs/adr/](docs/adr/) for
 > the decisions and why they were made,
 > [docs/architecture.md](docs/architecture.md) for the boundaries between
-> the three stages, and [CONTEXT.md](CONTEXT.md) for the vocabulary.
+> the three stages, [CONTEXT.md](CONTEXT.md) for the vocabulary, and
+> [CHANGELOG.md](CHANGELOG.md) for what changed and which defects caused it.
 
 - One command, no daemon, no queue. Suitable for cron.
 - Runs where you put it, on the schedule you choose.
