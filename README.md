@@ -33,6 +33,52 @@ This is not a ticket shuttle. It reads a hierarchy, counts progress from
 the child issues, and writes both levels into one table, so a Notion view
 can show management the epic level and anyone else the issues beneath it.
 
+## Who this is for
+
+The shape it fits: developers work in GitLab, and somebody outside GitLab
+wants to know where things stand. Three situations it was built around —
+
+- **The Monday morning board.** Someone spends the first hour of the week
+  moving cards to match what the sprint actually did. A cron entry at six
+  does the same job, and the hour is gone from the calendar rather than
+  from the person.
+- **A stakeholder who will not get a GitLab seat.** A department head, a
+  customer, an external partner — they get a Notion page with the epic
+  level and no tracker login, and what they see is what the issues say.
+- **A board nobody trusts any more.** The usual end state of a hand-kept
+  table: it disagrees with the tracker often enough that people check the
+  tracker instead, and the board survives as a thing that has to be
+  maintained anyway. Deriving it settles which of the two is right.
+
+It is **not** for keeping two systems in step — that is ADR-0001, and
+"one way" is the whole design. If people are meant to plan *in* Notion
+and have GitLab follow, this is the wrong tool and no setting changes
+that.
+
+Size is not the deciding factor; structure is. The tool needs bundles —
+epics or milestones — that someone actually maintains. A tracker where
+issues sit loose with no epic and no milestone has nothing to aggregate,
+and `roadmapper init` says so rather than drawing an empty board.
+
+### Epics or milestones
+
+The one choice worth making before installing anything:
+
+|  | Epics | Milestones |
+|---|---|---|
+| GitLab tier | **Premium or higher** | any, including Free |
+| Nesting | sub-epics, counted through the whole tree | flat — a milestone holds issues only |
+| Dates | the epic's own due date | the milestone's due date |
+| Health | rolled up from GitLab's health status | not available, the column stays empty |
+
+Milestones are the honest fallback rather than a crippled mode: progress,
+state, activity and dates all work. What you give up is the level above —
+a milestone cannot contain another milestone, so a board of them is one
+layer deep — and the health column, which GitLab does not carry there.
+
+Configured in `roadmapper.toml` as `bundle = "epic"` or
+`bundle = "milestone"`; the run reads one kind, never both (ADR-0002).
+
 ## What it does
 
 - Reads **epics** or **milestones** from GitLab as bundles of issues

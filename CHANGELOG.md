@@ -72,6 +72,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the half nobody names: because nothing is generated, a board that looks
   wrong is wrong reproducibly.
 
+- The README says who the tool is for. It explained the problem and the
+  design at length and never named a situation, so a reader had to work
+  out from the feature list whether they were the intended audience.
+  Three concrete ones now stand after *Why*, along with the case it is
+  explicitly wrong for — planning in Notion and having GitLab follow —
+  and the observation that structure decides rather than team size: a
+  tracker with no epics and no milestones has nothing to aggregate.
+
+  The choice between the two bundle kinds is now a decision rather than a
+  requirement buried in a list. Milestones need no paid tier and keep
+  progress, state, activity and dates; what they cannot do is nest, and
+  GitLab carries no health status for them.
+
 - The README says what the tool is allowed to do, and why it can run
   again tomorrow. Both properties existed and neither was stated where a
   reader decides: the GitLab side is read-only because no mutation exists
