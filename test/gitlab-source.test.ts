@@ -176,14 +176,55 @@ test('a non-200 answer is reported with its status', async () => {
   )
 })
 
-test('the fixtures carry no real project paths', () => {
-  for (const name of ['page-1', 'page-2']) {
-    const raw = readFileSync(fixturePath(name), 'utf8')
-    assert.match(raw, /acme\/product/)
+/**
+ * Fixtures must be invented. The check is a POSITIVE one — every host and
+ * every namespace has to match the reserved shapes — rather than a list of
+ * names that must not appear.
+ *
+ * A list of forbidden names only catches what someone already thought of,
+ * and it has to spell out the very strings it exists to keep out of the
+ * repository. `.invalid` is reserved by RFC 2606 and `acme` by RFC 2606's
+ * sibling convention, so neither can ever be somebody's real instance.
+ */
+test('the fixtures carry invented hosts and namespaces only', () => {
+  const files = [
+    'epics/page-1',
+    'epics/page-2',
+    'epics/children-page-1',
+    'epics/children-page-2',
+    'epics/children-page-3',
+    'milestones/page-1',
+    'milestones/issues',
+  ]
+
+  for (const file of files) {
+    const raw = readFileSync(resolve(process.cwd(), 'test/fixtures', `${file}.json`), 'utf8')
+
     for (const match of raw.matchAll(/https?:\/\/([^/"]+)/g)) {
-      assert.ok((match[1] ?? '').endsWith('.invalid'), `${name} must carry invented names only`)
+      const host = match[1] ?? ''
+      assert.ok(
+        host.endsWith('.invalid'),
+        `${file}: host ${host} is not a reserved name — fixtures must be invented`,
+      )
+    }
+
+    for (const match of raw.matchAll(/"(?:fullPath|full_path|namespace)":\s*"([^"]+)"/g)) {
+      const path = match[1] ?? ''
+      assert.ok(
+        path.startsWith('acme/'),
+        `${file}: namespace ${path} is not an invented one`,
+      )
     }
   }
+})
+
+test('the fixture guard rejects a real host', () => {
+  // Without this, the test above would pass just as well on a fixture set
+  // that contains no URLs at all.
+  const planted = '{"webUrl": "https://gitlab.com/real/group/-/epics/1"}'
+  const hosts = [...planted.matchAll(/https?:\/\/([^/"]+)/g)].map((m) => m[1] ?? '')
+  assert.equal(hosts.length, 1)
+  assert.equal(hosts.every((h) => h.endsWith('.invalid')), false)
 })
 
 // --- Stage4-2: the translation at the edge ------------------------------
