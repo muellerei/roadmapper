@@ -68,6 +68,12 @@ can show management the epic level and anyone else the issues beneath it.
   items from sibling projects as well — measured — so bundles would hold
   more items than they should. `roadmapper init` names this case when
   milestones are configured.
+- **Set up your Notion views.** The tool fills one table. How that table
+  is then read — a board grouped by state, a timeline on the due date, a
+  filter hiding what has not moved in a fortnight — is arranged once in
+  Notion by hand, and stays: a view survives every run, because the rows
+  are updated rather than replaced. `roadmapper init` creates missing
+  *columns*, never views.
 - **Produce HTML.** Notion is the only target.
 
 ## Where the data goes

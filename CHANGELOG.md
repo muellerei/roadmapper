@@ -72,6 +72,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the half nobody names: because nothing is generated, a board that looks
   wrong is wrong reproducibly.
 
+- The README says that Notion views are set up by hand. ADR-0016 already
+  assumed one ("whoever wants the judgement makes it in the view"), and
+  nothing said who creates it — the tool fills a table and creates missing
+  columns, never views. A reader was left to find that out by looking.
+
 - CI runs the suite and typecheck on Node 24 and 26, the boundary check
   of ADR-0003 and ADR-0008, and the path a stranger takes — clone,
   install, build, `roadmapper init` twice. `engines: >=24` had never been
