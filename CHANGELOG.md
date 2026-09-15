@@ -43,6 +43,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The README answered its four questions — what for, what it does, how to
+  set it up, how to use it — in an order that served the patient reader
+  first. Two hundred lines of prose stood between the title and
+  `git clone`, the whole data-protection section among them, so whoever
+  wanted to know whether the tool fits their problem had to scroll past
+  the material meant for whoever had already decided it does.
+
+  The sections are the same and none was shortened: `Getting started` and
+  `Requirements` now follow the description, `Data protection` and
+  `Built with` follow the usage, and the report a run prints stands near
+  the top as an example rather than only in `What a run tells you`, which
+  keeps its explanation. The status note at the top pointed at
+  `Getting started` for the unverified part; it names
+  `Not yet verified` instead, which is the heading that actually carries
+  it.
+
+- `Not yet verified` said which part of the write path has not met a live
+  workspace, but not what closing the gap needs, so it read as an open
+  end rather than a named one. It now states the prerequisite — a Notion
+  workspace in which an integration can be created, which is an admin
+  right rather than a per-user setting — and where the untested stretch
+  begins: the last mile of the write path, not the derivation above it.
+
 - ADR-0010 explained the factory shape partly by pointing at another
   codebase, one that is not in this repository and that a reader has no
   way to look at. The comparison therefore carried no information for

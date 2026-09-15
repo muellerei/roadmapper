@@ -7,8 +7,8 @@ stays the source of truth, Notion is the view.
 
 > **Status: in development.** The three stages are built and covered by
 > tests; what is not yet verified against a live Notion workspace is noted
-> under [Getting started](#getting-started). See [docs/adr/](docs/adr/) for
-> the decisions and why they were made,
+> under [Not yet verified](#not-yet-verified). See [docs/adr/](docs/adr/)
+> for the decisions and why they were made,
 > [docs/architecture.md](docs/architecture.md) for the boundaries between
 > the three stages, [CONTEXT.md](CONTEXT.md) for the vocabulary, and
 > [CHANGELOG.md](CHANGELOG.md) for what changed and which defects caused it.
@@ -19,6 +19,25 @@ stays the source of truth, Notion is the view.
 - Two runtime dependencies. No LLM involved.
 - Read-only on GitLab, one shared database on Notion, no personal data
   read at all — see [Data protection](#data-protection-and-how-to-check-it).
+
+## What a run looks like
+
+One command, and it ends by telling you what it filled in:
+
+    30 bundles, 210 items written.
+      GitLab ID       30/30
+      Feature         30/30
+      Status           2/30    (from labels; 28x To do, 2x In progress)
+      Progress        27/30
+      Health           0/30    (field not maintained in GitLab)
+
+    28 of 30 rows fell to "To do". Your [status] table maps "Flow".
+    Found in source: Stage. Adjust [status], or drop the state column.
+
+That report is the part worth reading, and
+[What a run tells you](#what-a-run-tells-you) explains why. If this is not
+what you are after, [When to use something
+else](#when-to-use-something-else) names the alternatives.
 
 ## Why
 
@@ -123,93 +142,6 @@ Configured in `roadmapper.toml` as `bundle = "epic"` or
   are updated rather than replaced. `roadmapper init` creates missing
   *columns*, never views.
 - **Produce HTML.** Notion is the only target.
-
-## Data protection, and how to check it
-
-This is the section for whoever has to sign off on a tool before it
-touches a tracker. It states properties rather than intentions, and each
-one is verifiable from the source in a few minutes — an assurance you
-cannot check is worth about as much as none.
-
-**Where the data goes:** two places, both yours — your GitLab instance
-and the Notion database you configured. Nothing else is contacted: no
-telemetry, no update check, no third party in between.
-
-**No personal data is read.** The GraphQL query asks for no assignee, no
-author, no username, no email address and no avatar — not by filtering
-them out afterwards, but by never selecting them, which is why
-`src/core/` has no field that could hold one. A bundle carries a title, a
-date, a state, counts and a URL; an item the same. Whoever is working on
-something does not travel to Notion, because the question the board
-answers is what is moving, not who is moving it.
-
-What does travel is issue **titles and descriptions**, and a description
-is free text somebody wrote — if your tracker puts customer names or
-personal details into those fields, they reach the Notion page like any
-other text. That is the one place to look before pointing this at a
-workspace with a different audience than the tracker.
-
-**No model sees your tickets.** This is a deterministic program: it reads
-GraphQL, counts, and writes REST. Nothing is sent to an LLM, and no part
-of the output is generated — which is also why a wrong board points at a
-wrong label rather than at something that cannot be reproduced. The
-decision behind it was about determinism under cron (ADR-0005); keeping
-issue content out of a model is the consequence, and worth stating
-plainly for anyone who has to answer that question before adopting a
-tool.
-
-It is checkable rather than promised: two runtime dependencies
-(`@notionhq/client`, which declares no transitive dependencies of its
-own, and a TOML parser), and every URL the code builds. Grepping for
-`https://` across `src/` finds them: three, each assembled from the
-`[gitlab].host` you configured, plus `api.notion.com` from the SDK.
-Nothing else is reachable, because nothing else is constructed.
-
-The tokens are read from the environment and never written to disk. The
-tool stores nothing between runs either: no cache, no state file, no
-database — every run asks GitLab again. The single file it ever writes is
-the configuration `roadmapper init` copies from the example, and that one
-holds no credentials by design.
-
-### What it is allowed to do
-
-Each side gets the narrowest thing that works, and the asymmetry is the
-point:
-
-- **GitLab: read-only.** The token needs scope `read_api` and nothing
-  more. There is no mutation anywhere in the source stage — moving a card
-  in Notion cannot write back, because there is no code that could.
-- **Notion: one database.** An integration sees only what has been shared
-  with it, so the write reaches the table you connected and nothing else
-  in the workspace — and within that table, only the columns `[columns]`
-  names.
-
-That is a smaller grant than a person has. Anyone running this by hand is
-signed in with their own account, which can reach every project they can
-see and every page in the workspace; a scoped token is the same job with
-most of the reach removed. It is also the difference between "I will not
-touch that" and "I cannot".
-
-### Why it can run again tomorrow
-
-The run is idempotent: the key decides update-or-create, so running it
-twice changes nothing the first run already did, and an interrupted run
-is repaired by the next one rather than needing a cleanup. Nothing is
-ever deleted — a row whose bundle disappeared from GitLab stays, because
-the first wrong key would otherwise have cost data.
-
-That is what makes it a cron job rather than a procedure. A board that is
-refreshed by someone performing a sequence of steps is only as current as
-the last time somebody had twenty minutes; one that runs at six every
-morning is current because nobody has to remember it. The same property
-is why a failed run is not a problem to untangle: run it again.
-
-## Built with
-
-TypeScript on Node ≥ 24. Two runtime dependencies: `@notionhq/client`
-and a TOML parser.
-GitLab is read over GraphQL, Notion written over REST — see
-[docs/adr/](docs/adr/) for why.
 
 ## Requirements
 
@@ -353,6 +285,12 @@ value shapes were confirmed against a real table (a percent column renders
 **not** been exercised is a full run against a live workspace through an
 integration token, and the self-throttling under real load.
 
+What that needs is a Notion workspace in which an integration can be
+created — which is a workspace-admin right, not a per-user setting. Until
+one is at hand, the gap stays named here rather than closed quietly: the
+untested part is the last mile of the write path, not the derivation
+above it.
+
 ## Configuration
 
 Copy [`roadmapper.example.toml`](roadmapper.example.toml) to
@@ -399,21 +337,11 @@ beside the real one.
 
 ## What a run tells you
 
-Every run ends with a report, and it is the part worth reading. Each
-decision this tool makes is defensible on its own — progress left empty
-rather than guessed at, a date left empty rather than invented, a state
-falling back to the default — and their *sum* can be an empty board while
-no error fires at all. The report is what makes that visible:
-
-    30 bundles, 210 items written.
-      GitLab ID       30/30
-      Feature         30/30
-      Status           2/30    (from labels; 28x To do, 2x In progress)
-      Progress        27/30
-      Health           0/30    (field not maintained in GitLab)
-
-    28 of 30 rows fell to "To do". Your [status] table maps "Flow".
-    Found in source: Stage. Adjust [status], or drop the state column.
+Every run ends with the report shown at the top, and it is the part worth
+reading. Each decision this tool makes is defensible on its own — progress
+left empty rather than guessed at, a date left empty rather than invented,
+a state falling back to the default — and their *sum* can be an empty board
+while no error fires at all. The report is what makes that visible.
 
 `Status 2/30` is the line to look at. A row that fell back to the default
 carries a value, but that value means "nothing was found here" — counting
@@ -431,6 +359,93 @@ failing to write. It does not mean "something was ugly": one skipped row
 among thirty keeps exit 0, and so does an empty result. The tool is built
 for cron, and a failure mail every night trains its reader to ignore the
 mails — including the one that reports a real abort.
+
+## Data protection, and how to check it
+
+This is the section for whoever has to sign off on a tool before it
+touches a tracker. It states properties rather than intentions, and each
+one is verifiable from the source in a few minutes — an assurance you
+cannot check is worth about as much as none.
+
+**Where the data goes:** two places, both yours — your GitLab instance
+and the Notion database you configured. Nothing else is contacted: no
+telemetry, no update check, no third party in between.
+
+**No personal data is read.** The GraphQL query asks for no assignee, no
+author, no username, no email address and no avatar — not by filtering
+them out afterwards, but by never selecting them, which is why
+`src/core/` has no field that could hold one. A bundle carries a title, a
+date, a state, counts and a URL; an item the same. Whoever is working on
+something does not travel to Notion, because the question the board
+answers is what is moving, not who is moving it.
+
+What does travel is issue **titles and descriptions**, and a description
+is free text somebody wrote — if your tracker puts customer names or
+personal details into those fields, they reach the Notion page like any
+other text. That is the one place to look before pointing this at a
+workspace with a different audience than the tracker.
+
+**No model sees your tickets.** This is a deterministic program: it reads
+GraphQL, counts, and writes REST. Nothing is sent to an LLM, and no part
+of the output is generated — which is also why a wrong board points at a
+wrong label rather than at something that cannot be reproduced. The
+decision behind it was about determinism under cron (ADR-0005); keeping
+issue content out of a model is the consequence, and worth stating
+plainly for anyone who has to answer that question before adopting a
+tool.
+
+It is checkable rather than promised: two runtime dependencies
+(`@notionhq/client`, which declares no transitive dependencies of its
+own, and a TOML parser), and every URL the code builds. Grepping for
+`https://` across `src/` finds them: three, each assembled from the
+`[gitlab].host` you configured, plus `api.notion.com` from the SDK.
+Nothing else is reachable, because nothing else is constructed.
+
+The tokens are read from the environment and never written to disk. The
+tool stores nothing between runs either: no cache, no state file, no
+database — every run asks GitLab again. The single file it ever writes is
+the configuration `roadmapper init` copies from the example, and that one
+holds no credentials by design.
+
+### What it is allowed to do
+
+Each side gets the narrowest thing that works, and the asymmetry is the
+point:
+
+- **GitLab: read-only.** The token needs scope `read_api` and nothing
+  more. There is no mutation anywhere in the source stage — moving a card
+  in Notion cannot write back, because there is no code that could.
+- **Notion: one database.** An integration sees only what has been shared
+  with it, so the write reaches the table you connected and nothing else
+  in the workspace — and within that table, only the columns `[columns]`
+  names.
+
+That is a smaller grant than a person has. Anyone running this by hand is
+signed in with their own account, which can reach every project they can
+see and every page in the workspace; a scoped token is the same job with
+most of the reach removed. It is also the difference between "I will not
+touch that" and "I cannot".
+
+### Why it can run again tomorrow
+
+The run is idempotent: the key decides update-or-create, so running it
+twice changes nothing the first run already did, and an interrupted run
+is repaired by the next one rather than needing a cleanup. Nothing is
+ever deleted — a row whose bundle disappeared from GitLab stays, because
+the first wrong key would otherwise have cost data.
+
+That is what makes it a cron job rather than a procedure. A board that is
+refreshed by someone performing a sequence of steps is only as current as
+the last time somebody had twenty minutes; one that runs at six every
+morning is current because nobody has to remember it. The same property
+is why a failed run is not a problem to untangle: run it again.
+
+## Built with
+
+TypeScript on Node ≥ 24. Two runtime dependencies: `@notionhq/client`
+and a TOML parser.
+GitLab is read over GraphQL, Notion written over REST — see
+[docs/adr/](docs/adr/) for why.
 
 ## When to use something else
 
