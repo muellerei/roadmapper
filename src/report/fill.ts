@@ -144,10 +144,11 @@ function distributionOf(values: readonly string[]): string {
  * What to enter, not merely that something is missing.
  *
  * Includes a CASE counter-check: the lookup is codepoint-exact (R7), and so
- * are GitLab's label filters — measured, one prefix and the same prefix
- * with a different first letter are two different labels there, both in
- * use side by side — one returned nothing, the other more than the query
- * could carry. Two spellings of one word look identical in a report. The LOOKUP does not become fuzzy,
+ * are GitLab's label filters. Measured against a real group: one prefix
+ * and the same prefix with a different first letter are two different
+ * labels there, both in use side by side — one returned nothing, the
+ * other more than the query could carry. Two spellings of one word look
+ * identical when skimming a report. The LOOKUP does not become fuzzy,
  * only the diagnosis.
  */
 function stateHint(cfg: CoreConfig, prefixes: readonly string[], onDefault: number, total: number): string {
