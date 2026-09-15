@@ -47,7 +47,7 @@ exclude_titles = ["Dependency Dashboard"]
 
 # Where does an item's work step come from?
 #
-#   "label"   the [status] table below, usually "Flow::" (the default)
+#   "label"   the [status] table below, e.g. a "Flow::" prefix (the default)
 #   "status"  GitLab's own status field on the work item
 #
 # Take what you ACTUALLY MAINTAIN — not what happens to be there. A board

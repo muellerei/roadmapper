@@ -18,10 +18,10 @@ A fixed "status field first" would be wrong for teams who advance their
 workflow through labels and never touch the status field. Measured against a
 real working group on 2026-08-24:
 
-| | status field | `Flow::` labels |
+| | status field | scoped workflow labels |
 |---|---|---|
 | defined | 5 (GitLab defaults, untouched) | 10, each described |
-| across 9 open issues | **9× `To do`** | 6× To refine, 1× Testing, 1× Blocked |
+| across 9 open issues | **9× `To do`** | 8× spread over three steps, 1× unlabelled |
 
 The status field is present and 100 % filled — with the default value nobody
 ever set. With a fixed ranking every Notion row would have read `To do`

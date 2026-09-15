@@ -317,7 +317,7 @@ test('R7b the shared stage rule reaches the FLAT label form of an issue', () => 
     .then((result) => {
       assert.equal(result.bundles[0]!.items[0]!.stage.label, 'Flow::Doing')
       // The scoped label's prefix is named for the report; the flat one has none.
-      assert.deepEqual(result.prefixes, ['Workflow'])
+      assert.deepEqual(result.prefixes, ['Flow'])
     })
 })
 

@@ -382,7 +382,7 @@ no error fires at all. The report is what makes that visible:
       Progress        27/30
       Health           0/30    (field not maintained in GitLab)
 
-    28 of 30 rows fell to "To do". Your [status] table maps "Workflow".
+    28 of 30 rows fell to "To do". Your [status] table maps "Flow".
     Found in source: Stage. Adjust [status], or drop the state column.
 
 `Status 2/30` is the line to look at. A row that fell back to the default

@@ -141,7 +141,7 @@ test('the key is built under both forms, from the bundle path', () => {
 
 test('the whole bundle survives one pass through rowsOf', () => {
   const b = theBundle()
-  const result: SourceResult = { bundles: [b], prefixes: ['Workflow'], truncated: [] }
+  const result: SourceResult = { bundles: [b], prefixes: ['Flow'], truncated: [] }
   const rows = rowsOf(result, cfg)
 
   // parent + its two items + the child + the child's item

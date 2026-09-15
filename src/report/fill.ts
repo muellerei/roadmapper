@@ -11,7 +11,7 @@ import type { UnusableColumn } from '../output/notion/write.js'
  * instead of 0 %, due empty instead of guessed, stage null instead of
  * guessed, health empty when unmaintained. THEIR SUM IS AN EMPTY BOARD, and
  * no error path fires — the run reports success. Measured, not feared: in
- * gitlab-org no epic carries a `Flow::` label at all, so the example
+ * gitlab-org no epic carries such a label at all, so the example
  * configuration would leave `state` on the default for every row while the
  * run looked healthy.
  */
@@ -144,10 +144,10 @@ function distributionOf(values: readonly string[]): string {
  * What to enter, not merely that something is missing.
  *
  * Includes a CASE counter-check: the lookup is codepoint-exact (R7), and so
- * are GitLab's label filters — measured, `Flow::complete` returns no
- * hits while `a lowercase twin` returns so many the query times out. Both
- * spellings exist side by side there, and `workflow` against `Workflow`
- * looks identical when skimming a report. The LOOKUP does not become fuzzy,
+ * are GitLab's label filters — measured, one prefix and the same prefix
+ * with a different first letter are two different labels there, both in
+ * use side by side — one returned nothing, the other more than the query
+ * could carry. Two spellings of one word look identical in a report. The LOOKUP does not become fuzzy,
  * only the diagnosis.
  */
 function stateHint(cfg: CoreConfig, prefixes: readonly string[], onDefault: number, total: number): string {

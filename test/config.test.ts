@@ -263,7 +263,7 @@ test('AK49 a bare hostname is accepted', () => {
 test('R7b keys carrying two prefixes are rejected, naming both', () => {
   rejects(
     SOUND.replace('"Flow::Blocked" = "Blocked"', '"Rank::1" = "Blocked"'),
-    /more than one prefix[\s\S]*"Workflow"[\s\S]*"Rank"/,
+    /more than one prefix[\s\S]*"Flow"[\s\S]*"Rank"/,
   )
 })
 

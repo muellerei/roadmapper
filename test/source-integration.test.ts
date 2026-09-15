@@ -105,7 +105,7 @@ test('the prefixes and depth markers travel alongside, ready for the report', as
   const { http } = httpOf([fixture('page-1'), lastPage])
   const result = await createEpicSource('gitlab.example.invalid', 'glpat-invented', cfg, http).read(source)
 
-  assert.deepEqual(result.prefixes, ['Workflow'])
+  assert.deepEqual(result.prefixes, ['Flow'])
   assert.deepEqual(result.truncated, [])
   assert.deepEqual(result.complaints, [])
 })

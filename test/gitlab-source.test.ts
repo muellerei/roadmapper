@@ -325,7 +325,7 @@ test('a fixture page becomes complete bundles, with no GitLab word left', () => 
   assert.deepEqual(epic.due, new Date('2026-09-30'))
   // The rollup carries one atRisk among two onTrack — the worst wins.
   assert.equal(epic.health, 'risk')
-  assert.equal(prefixes.includes('Workflow'), true)
+  assert.equal(prefixes.includes('Flow'), true)
   assert.deepEqual(truncated, [])
 
   // The child epic came along, one level deep, and carries its own item.
@@ -483,7 +483,7 @@ test('R7a the prefix is the part before the LAST ::, not the first', () => {
   const labels = { labels: { nodes: [{ title: 'Flow::Doing' }, { title: 'Rank::1' }, { title: 'AST::Ruleset::FN' }] } }
   const { prefixes } = translateEpics([epicNode({}, [labels])], 'acme/product', byLabel)
 
-  assert.deepEqual([...prefixes].sort(), ['AST::Ruleset', 'Rank', 'Workflow'])
+  assert.deepEqual([...prefixes].sort(), ['AST::Ruleset', 'Flow', 'Rank'])
   // The scope GitLab holds exclusively is AST::Ruleset — not AST.
   assert.equal(prefixes.includes('AST'), false)
 })

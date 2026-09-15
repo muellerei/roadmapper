@@ -426,7 +426,7 @@ test('R27b the survey reads both sources and the sample', async () => {
 
   assert.equal(survey.defined.length, 3)
   assert.deepEqual(survey.defined[1], { name: 'In progress', category: 'active' })
-  assert.deepEqual([...survey.prefixes].sort(), ['Rank', 'Workflow'])
+  assert.deepEqual([...survey.prefixes].sort(), ['Flow', 'Rank'])
   assert.equal(survey.sample.issues, 9)
   // The status field is filled on all nine — with one value.
   assert.deepEqual(survey.sample.byStatus, [{ value: 'To do', count: 9 }])
@@ -437,7 +437,7 @@ test('R27b the survey reads both sources and the sample', async () => {
 test('R27b the comparison names "label" when the status field sits on ONE value', () => {
   const survey = {
     defined: [{ name: 'To do', category: 'todo' as const }],
-    prefixes: ['Workflow'],
+    prefixes: ['Flow'],
     sample: {
       issues: 9,
       byStatus: [{ value: 'To do', count: 9 }],
@@ -485,7 +485,7 @@ test('R27a no matching label names the prefixes the group actually carries', () 
   const text = compareSources(survey, cfg)
 
   // The configured prefix is Workflow, the group carries others.
-  assert.match(text, /No label matches "Workflow"/)
+  assert.match(text, /No label matches "Flow"/)
   assert.match(text, /Scoped labels found in the group: Stage, Rank, team/)
   assert.match(text, /Adjust \[status\], or drop the state column/)
   // Naming what IS there is not suggesting content (ADR-0006).
@@ -503,7 +503,7 @@ test('a sample of nothing says so instead of advising on air', () => {
 test('an instance without the status field says that, rather than showing zero', () => {
   const survey = {
     defined: [],
-    prefixes: ['Workflow'],
+    prefixes: ['Flow'],
     sample: { issues: 3, byStatus: [], byLabel: [{ value: 'Flow::Doing', count: 3 }] },
     complaints: [],
   }

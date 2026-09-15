@@ -82,14 +82,14 @@ test('an updated-only run does not read as "nothing written"', () => {
 })
 
 test('AK20 no bundles is a gap, not an error — exit 0 and where to look', () => {
-  const outcome = emptyOutcome(['Workflow'])
+  const outcome = emptyOutcome(['Flow'])
 
   assert.equal(outcome.exitCode, 0)
   assert.equal(outcome.summary, '')
   const message = outcome.problems.join('\n')
   assert.match(message, /No bundles found/)
   assert.match(message, /Nothing was written/)
-  assert.match(message, /Workflow/)
+  assert.match(message, /Flow/)
 })
 
 test('AK20 with nothing to name it says what it can and no more', () => {
@@ -179,7 +179,7 @@ function stated(total: number, set: number, value = 'In progress'): Row[] {
 }
 
 test('AK23 every written column gets a filled/total line', () => {
-  const report = fillOf(stated(30, 2), byLabel, COLUMNS, carried, ['Workflow'])
+  const report = fillOf(stated(30, 2), byLabel, COLUMNS, carried, ['Flow'])
 
   const status = report.columns.find((c) => c.column === 'Status')!
   // AK23 verbatim: 30 bundles, `state` set on two of them -> `state 2/30`.
@@ -201,7 +201,7 @@ test('EC6 a column skipped for its type reads 0, with the skip as its note', () 
   // The board HAS the column and the rows HAVE values, but nothing was
   // written into it. Counting the values would state the source data while
   // claiming the target — the one failure the fill rate exists against.
-  const report = fillOf(stated(30, 2), byLabel, COLUMNS, carried, ['Workflow'], [
+  const report = fillOf(stated(30, 2), byLabel, COLUMNS, carried, ['Flow'], [
     { role: 'progress', column: 'Progress', type: 'rich_text', wanted: ['number'] },
   ])
 
@@ -222,7 +222,7 @@ test('a column the target does not carry gets no line at all', () => {
 })
 
 test('the state line ALWAYS names the source, under both settings', () => {
-  const fromLabels = fillOf(stated(10, 5), byLabel, COLUMNS, carried, ['Workflow'])
+  const fromLabels = fillOf(stated(10, 5), byLabel, COLUMNS, carried, ['Flow'])
   assert.match(fromLabels.columns.find((c) => c.column === 'Status')!.note!, /from labels/)
 
   const byStatus: CoreConfig = { ...byLabel, stageSource: 'status', active: [] }
@@ -232,7 +232,7 @@ test('the state line ALWAYS names the source, under both settings', () => {
 
 test('the state line carries the distribution, descending — a rate alone deceives', () => {
   // 28 on the default, 2 in progress: 30/30 filled would look healthy.
-  const report = fillOf(stated(30, 2), byLabel, COLUMNS, carried, ['Workflow'])
+  const report = fillOf(stated(30, 2), byLabel, COLUMNS, carried, ['Flow'])
   const note = report.columns.find((c) => c.column === 'Status')!.note!
 
   assert.match(note, /28x To do, 2x In progress/)
@@ -243,19 +243,19 @@ test('AK24 a majority on the default names the prefixes actually found', () => {
 
   const hint = report.hints.join('\n')
   assert.match(hint, /28 of 30 rows fell to "To do"/)
-  assert.match(hint, /maps "Workflow"/)
+  assert.match(hint, /maps "Flow"/)
   assert.match(hint, /Found in source: Stage, Rank/)
   assert.match(hint, /Adjust \[status\], or drop the state column/)
 })
 
 test('a case-only mismatch is diagnosed as such — labels are case-sensitive', () => {
-  // Measured in gitlab-org: Flow::complete returns nothing while
-  // a lowercase twin returns more than the query can carry.
-  const report = fillOf(stated(30, 0), byLabel, COLUMNS, carried, ['workflow'])
+  // Measured against a real group: two spellings of one prefix differing
+  // only in case are two different labels, one empty and one oversized.
+  const report = fillOf(stated(30, 0), byLabel, COLUMNS, carried, ['flow'])
 
   const hint = report.hints.join('\n')
   assert.match(hint, /differ only in CASE/)
-  assert.match(hint, /"Workflow" vs "workflow"/)
+  assert.match(hint, /"Flow" vs "flow"/)
   assert.match(hint, /case-sensitive/)
 })
 
@@ -270,12 +270,12 @@ test('under stage_source = "status" the hint points at the status field, not at 
 })
 
 test('a healthy state column produces no hint at all', () => {
-  const report = fillOf(stated(30, 28), byLabel, COLUMNS, carried, ['Workflow'])
+  const report = fillOf(stated(30, 28), byLabel, COLUMNS, carried, ['Flow'])
   assert.deepEqual(report.hints, [])
 })
 
 test('a zero-filled column says what caused it', () => {
-  const report = fillOf(stated(10, 5), byLabel, COLUMNS, carried, ['Workflow'])
+  const report = fillOf(stated(10, 5), byLabel, COLUMNS, carried, ['Flow'])
   assert.match(report.columns.find((c) => c.column === 'Health')!.note!, /not maintained in GitLab/)
 })
 

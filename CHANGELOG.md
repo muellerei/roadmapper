@@ -72,6 +72,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the half nobody names: because nothing is generated, a board that looks
   wrong is wrong reproducibly.
 
+- Every example label was renamed to an invented scheme. The old ones
+  reproduced a real group's label vocabulary verbatim — the values, the
+  prefix, and a second prefix beside it — because they were written from
+  what was in front of the author rather than made up. Nothing about them
+  identified anyone, but example data in a public repository should be
+  invented on purpose, the way the fixtures already are.
+
+  ADR-0017 keeps its measurement and loses the label names: what it
+  records is that a status field read 100 % default while the labels held
+  three different steps, and that holds without naming them.
+
 - The data section is now titled for the person who needs it — whoever
   signs a tool off before it touches a tracker — and says what it had
   never stated: the GraphQL query selects no assignee, author, username,

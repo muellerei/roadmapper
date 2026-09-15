@@ -152,7 +152,7 @@ function theRows() {
     children: [child],
   }
 
-  const result: SourceResult = { bundles: [bundle], prefixes: ['Workflow'], truncated: [] }
+  const result: SourceResult = { bundles: [bundle], prefixes: ['Flow'], truncated: [] }
   return rowsOf(result, cfg)
 }
 
