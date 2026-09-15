@@ -5,7 +5,7 @@
 Derive a Notion roadmap from GitLab epics and milestones. One way: GitLab
 stays the source of truth, Notion is the view.
 
-> **Status: in development.** The six stages are built and covered by
+> **Status: in development.** The three stages are built and covered by
 > tests; what is not yet verified against a live Notion workspace is noted
 > under [Getting started](#getting-started). See [docs/adr/](docs/adr/) for
 > the decisions and why they were made,
@@ -160,10 +160,10 @@ tool.
 
 It is checkable rather than promised: two runtime dependencies
 (`@notionhq/client`, which declares no transitive dependencies of its
-own, and a TOML parser), the URLs built in
-[`src/source/gitlab/query.ts`](src/source/gitlab/query.ts) and
-[`src/core/key.ts`](src/core/key.ts), and `api.notion.com` from the SDK.
-Grepping for `https://` across `src/` finds all of them.
+own, and a TOML parser), and every URL the code builds. Grepping for
+`https://` across `src/` finds them: three, each assembled from the
+`[gitlab].host` you configured, plus `api.notion.com` from the SDK.
+Nothing else is reachable, because nothing else is constructed.
 
 The tokens are read from the environment and never written to disk. The
 tool stores nothing between runs either: no cache, no state file, no

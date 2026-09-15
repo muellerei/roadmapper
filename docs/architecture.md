@@ -65,7 +65,7 @@ neither side — which is what makes "milestone with 4 issues, 2 closed →
 
 ## The three directories that are not stages
 
-Four more directories exist, and none of them is a fourth stage. They sit
+Three more directories exist, and none of them is a fourth stage. They sit
 *around* the pipeline rather than in it, which is why the diagram above
 does not show them as boxes in the flow:
 

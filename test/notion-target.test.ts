@@ -697,7 +697,12 @@ test('R20a a page body of more than 100 blocks is fully replaced, not partly', a
     return {}
   }
 
-  await createNotionWriter(stub.client, WRITE_SCHEMA, WRITE_COLUMNS).write([row()])
+  // Pass-through retrier: this case is about replacing 250 blocks, not about
+  // pacing. With the real one each delete waits 333 ms, and this single test
+  // costs 85 of the suite's 103 seconds — for a property it does not test.
+  await createNotionWriter(stub.client, WRITE_SCHEMA, WRITE_COLUMNS, {
+    run: <T>(request: () => Promise<T>) => request(),
+  }).write([row()])
 
   assert.equal(listed, 3, 'the listing was followed to its end')
   assert.equal(deleted.length, 250, 'every old block was removed')
