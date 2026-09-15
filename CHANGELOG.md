@@ -51,6 +51,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   answering problems this tool does not have, a database behind a
   repository and a server to wire up. That argument stands on its own.
 
+- `src/main.ts` told the reader that credentials never come from
+  `local/` — a directory in the author's working copy that no clone of
+  this repository contains. The comment now states the rule itself:
+  credentials come from the environment, nothing beside the command is
+  searched for, and cron has no working directory worth trusting.
+
+### Added
+
+- The README says where the data goes and where it does not. Two
+  endpoints — your GitLab instance and your Notion database — and no
+  model in between: this is a deterministic program, and no issue content
+  is sent anywhere else. The section gives the means to check that rather
+  than asking anyone to believe it, since the URLs are greppable and the
+  dependency tree is two packages deep.
+
+  ADR-0005 rejected MCP for determinism under cron. Keeping issue content
+  away from a model follows from that decision rather than motivating it,
+  which is why it had never been written down — it is now, together with
+  the half nobody names: because nothing is generated, a board that looks
+  wrong is wrong reproducibly.
+
+- CI runs the suite and typecheck on Node 24 and 26, the boundary check
+  of ADR-0003 and ADR-0008, and the path a stranger takes — clone,
+  install, build, `roadmapper init` twice. `engines: >=24` had never been
+  exercised above its lower bound, and the boundary script hung in no
+  hook, so nothing ran it.
+
 ## [0.1.0] - 2026-08-28
 
 The state the repository was published in. Never tagged and never
