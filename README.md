@@ -222,22 +222,28 @@ GitLab is read over GraphQL, Notion written over REST — see
 
 ## Getting started
 
-    git clone https://github.com/muellerei/roadmapper.git
-    cd roadmapper
-    npm install
-    npm run build
-    npm link          # optional — puts `roadmapper` on your PATH
+```bash
+git clone https://github.com/muellerei/roadmapper.git
+cd roadmapper
+npm install
+npm run build
+npm link          # optional — puts `roadmapper` on your PATH
+```
 
 Then, in the directory you want to run from (without `npm link`, call
 `node /path/to/roadmapper/dist/src/main.js` instead):
 
-    export GITLAB_TOKEN=glpat-...     # GitLab → Settings → Access tokens, scope read_api
-    export NOTION_TOKEN=ntn_...       # notion.so/profile/integrations
+```bash
+export GITLAB_TOKEN=glpat-...     # GitLab → Settings → Access tokens, scope read_api
+export NOTION_TOKEN=ntn_...       # notion.so/profile/integrations
+```
 
-    roadmapper init                   # creates roadmapper.toml, then checks everything
-    # edit roadmapper.toml
-    roadmapper init                   # run it again — it checks, it does not guess
-    roadmapper                        # the first sync
+```bash
+roadmapper init                   # creates roadmapper.toml, then checks everything
+# edit roadmapper.toml
+roadmapper init                   # run it again — it checks, it does not guess
+roadmapper                        # the first sync
+```
 
 `roadmapper init` does most of the setup: it creates the configuration from
 the example, checks both tokens, resolves the database, **creates the
@@ -256,14 +262,18 @@ looking around is a lookup nobody can see.
 
 Node reads one for you, if you want the file:
 
-    node --env-file=.env /path/to/roadmapper/dist/src/main.js
+```bash
+node --env-file=.env /path/to/roadmapper/dist/src/main.js
+```
 
 That flag reaches the `node` binary, not the `roadmapper` shim `npm link`
 puts on your `PATH`. To keep the short command, put the values into the
 shell first:
 
-    set -a; . ./.env; set +a       # exports every name the file sets
-    roadmapper
+```bash
+set -a; . ./.env; set +a       # exports every name the file sets
+roadmapper
+```
 
 Both are the same thing to the tool: by the time it starts, the tokens are
 in the environment. Which of the two you use is a matter of taste — the
@@ -358,8 +368,10 @@ what is in the source.
 Both subcommands take it; without it, `roadmapper.toml` in the working
 directory is used.
 
-    roadmapper --config test.toml        # a rebuilt target schema
-    roadmapper --config produktiv.toml   # the real target
+```bash
+roadmapper --config test.toml        # a rebuilt target schema
+roadmapper --config produktiv.toml   # the real target
+```
 
 **A relative path resolves against the working directory**, like any other
 command-line tool. The tool does not resolve against its own location and
@@ -369,8 +381,10 @@ with two similarly named targets that is the worst possible property.
 **For cron, give an absolute path** — the case the parameter exists for is
 also the case with the least obvious working directory:
 
-    0 6 * * *  roadmapper --config /etc/roadmapper/produktiv.toml
-    0 7 * * *  roadmapper --config /etc/roadmapper/test.toml
+```cron
+0 6 * * *  roadmapper --config /etc/roadmapper/produktiv.toml
+0 7 * * *  roadmapper --config /etc/roadmapper/test.toml
+```
 
 Which invocation creates a config, and which does not:
 

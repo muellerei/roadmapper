@@ -2,11 +2,13 @@
 
 ## Getting a working copy
 
-    git clone https://github.com/muellerei/roadmapper.git
-    cd roadmapper
-    npm install
-    npm run build
-    npm test
+```bash
+git clone https://github.com/muellerei/roadmapper.git
+cd roadmapper
+npm install
+npm run build
+npm test
+```
 
 Node ≥ 24 is required (ADR-0012). Nothing else has to be installed, and
 no token is needed to run the suite: every test drives a stub, so the
@@ -14,9 +16,11 @@ whole thing passes with no network and no GitLab or Notion account.
 
 ## The three checks
 
-    npm run typecheck          # tsc --noEmit
-    npm test                   # builds, then runs the suite
-    npm run check:boundaries   # the stage boundary, as a script
+```bash
+npm run typecheck          # tsc --noEmit
+npm test                   # builds, then runs the suite
+npm run check:boundaries   # the stage boundary, as a script
+```
 
 All three run in CI on every push and pull request, plus a job that walks
 the path a new user takes — clone, install, build, `roadmapper init`.
