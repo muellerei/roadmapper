@@ -68,6 +68,34 @@ can show management the epic level and anyone else the issues beneath it.
   milestones are configured.
 - **Produce HTML.** Notion is the only target.
 
+## Where the data goes
+
+Two places, both yours: your GitLab instance and the Notion database you
+configured. Nothing else is contacted — no telemetry, no update check, no
+third party in between.
+
+**No model sees your tickets.** This is a deterministic program: it reads
+GraphQL, counts, and writes REST. Nothing is sent to an LLM, and no part
+of the output is generated — which is also why a wrong board points at a
+wrong label rather than at something that cannot be reproduced. The
+decision behind it was about determinism under cron (ADR-0005); keeping
+issue content out of a model is the consequence, and worth stating
+plainly for anyone who has to answer that question before adopting a
+tool.
+
+It is checkable rather than promised: two runtime dependencies
+(`@notionhq/client`, which declares no transitive dependencies of its
+own, and a TOML parser), the URLs built in
+[`src/source/gitlab/query.ts`](src/source/gitlab/query.ts) and
+[`src/core/key.ts`](src/core/key.ts), and `api.notion.com` from the SDK.
+Grepping for `https://` across `src/` finds all of them.
+
+The tokens are read from the environment and never written to disk. The
+tool stores nothing between runs either: no cache, no state file, no
+database — every run asks GitLab again. The single file it ever writes is
+the configuration `roadmapper init` copies from the example, and that one
+holds no credentials by design.
+
 ## Built with
 
 TypeScript on Node ≥ 24. Two runtime dependencies: `@notionhq/client`

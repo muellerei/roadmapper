@@ -15,6 +15,19 @@ dependencies**, verified via `npm view`.
 
 GitLab gets no SDK: GraphQL is one request and `fetch` is built in.
 
+## A consequence worth naming
+
+Issue content never reaches a model. That was not the reason — the reason
+was determinism under cron — but it is the property people ask about
+first when a tool touches their tickets, and a decision taken for one
+reason can be worth stating for another.
+
+It also holds in the other direction: because nothing is generated, a
+board that looks wrong is wrong *reproducibly*. The labels can be read,
+the count recomputed, the same run repeated to the same result. A tool
+that summarised a tree with a model would lose that, and the loss would
+show up exactly where it costs most — in the column management reads.
+
 ## Consequences
 
 Exactly one runtime dependency. The SDK declares `engines.node >= 18`,
