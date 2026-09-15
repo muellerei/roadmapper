@@ -78,7 +78,7 @@ export type Bundle = {
   items: Item[]
   /** Direct child bundles. Empty for milestones, and for epics without
    *  sub-epics. Needed for the special case in section 9 / AK7.
-   *  Only ever one level deep — see R3c. */
+   *  Only ever one level deep — see ADR-0024. */
   children: Bundle[]
 }
 

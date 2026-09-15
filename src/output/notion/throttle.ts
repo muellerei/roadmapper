@@ -114,7 +114,7 @@ export function createRetrier(
   now: () => number = Date.now,
 ) {
   // The last request's finish time. Closed over rather than module-level, so
-  // two targets never share a pace (boundaries.md: no module-level state).
+  // two targets never share a pace — no module-level state (ADR-0010).
   let previous = 0
 
   /** Wait out whatever is left of the minimum gap, if anything. */

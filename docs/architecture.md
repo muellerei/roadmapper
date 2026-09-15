@@ -129,7 +129,7 @@ a renderer that receives one has to parse it back to draw a bar.
     3  compute                     progress counts the issue tree,
        │                           at any depth (ADR-0015) —
        │                           but the STATE stops after one
-       │                           child level (R3c), and the report
+       │                           child level (ADR-0024), and the report
        │                           names the bundles it truncates
        ▼
     4  write, one row at a time
@@ -158,7 +158,7 @@ otherwise have cost data.
 | Bundles target-neutral, no Notion term in core, outputs never fetch | ADR-0008 |
 | Page bodies always replaced, the table is a view | ADR-0009 |
 | Progress counted from the tree, at any depth | ADR-0015 |
-| The state stops one child level down, and says so | R3c (spec) |
+| The state stops one child level down, and says so | ADR-0024 |
 | Movement is a date, never a verdict | ADR-0016 |
 | The stage source is configurable, exactly one wins | ADR-0017 |
 | Ambiguous lists decided by configuration order | ADR-0018 |

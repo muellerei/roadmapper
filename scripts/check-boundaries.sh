@@ -17,10 +17,9 @@
 #
 # What is NOT on them, deliberately: title, state, name, updatedAt,
 # description. They appear in GitLab's WorkItem too, but a general word does
-# not belong to GitLab just because GitLab uses it — and three of them are
-# prescribed by .claude/rules/boundaries.md for the seam types themselves.
-# A grep for "GitLab field names" would have flagged the project's own
-# specification.
+# not belong to GitLab just because GitLab uses it — and the seam types in
+# docs/architecture.md are built from them. A grep for "GitLab field names"
+# would have flagged the project's own vocabulary.
 set -uo pipefail
 
 target="${1:-src/core/}"
@@ -62,7 +61,7 @@ if [ -n "$hits" ]; then
   echo "Boundary violation in ${target} — ${owns}:" >&2
   echo "$hits" >&2
   echo >&2
-  echo "See ADR-0003, ADR-0008 and .claude/rules/boundaries.md." >&2
+  echo "See ADR-0003, ADR-0008 and docs/architecture.md." >&2
   exit 1
 fi
 

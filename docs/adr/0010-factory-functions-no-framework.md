@@ -17,6 +17,14 @@ The same shape carries the Notion writer and anything else that needs a
 token, a client or a rate limiter. Pure computation in `src/core/` needs
 none of it and stays plain exported functions.
 
+**State is closed over, never module-level.** No mutable value lives at
+the top of a module, and nothing reads `process.env` deep in a call. The
+throttle is the case that shows why: it remembers when the last request
+finished, and as a module-level variable two targets in one run would
+share a pace neither of them chose. Closed over by the factory, each
+target gets its own — and a test can drive one without the other
+noticing.
+
 ## Considered Options
 
 **Classes with a DI container** were rejected. A container earns its cost

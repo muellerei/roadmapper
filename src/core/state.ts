@@ -29,7 +29,7 @@ export type Verdict = {
  * The state reads the DIRECT children while progress counts the whole tree.
  * That is the division of labour, not a defect: progress must count deep or
  * the quantity is wrong, and "is it moving" is not a sum. The one-level
- * bound is R3c.
+ * bound, and what the run says about it, is ADR-0024.
  */
 export function stateOf(bundle: Bundle, cfg: CoreConfig): string {
   return verdictOfBundle(bundle, cfg).value
